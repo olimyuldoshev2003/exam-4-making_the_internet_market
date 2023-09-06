@@ -5,6 +5,7 @@ import Layout from "./Layout/Layout";
 import AuthCheck from "./utils/AuthCheck";
 import ProtectedRoute from "./utils/ProtectedRoute";
 import Products from "./pages/Products/Products";
+import Home from "./pages/Home/Home";
 
 const App = () => {
   const router = createBrowserRouter([
@@ -21,16 +22,20 @@ const App = () => {
       element: <SignUp />,
     },
     {
-      path: "products",
+      path: "home",
       element: <Layout />,
       children: [
         {
           index: true,
           element: (
             <ProtectedRoute>
-              <Products />
-            </ProtectedRoute>
+              <Home />
+            </ProtectedRoute> 
           ),
+        },
+        {
+          path: "/home/products",
+          element: <Products />,
         },
         // {
         //   path: "category/:id",

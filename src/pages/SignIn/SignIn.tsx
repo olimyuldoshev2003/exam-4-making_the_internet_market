@@ -39,11 +39,12 @@ const SignIn = () => {
 
       if (data.status >= 400) {
         setErrorMessage(data);
+        alert("Your password in incorrect")
         return;
       }
 
       saveToken(data.accessToken);
-      navigate("/products");
+      navigate("/home");
     } catch (error) {}
   }
 
