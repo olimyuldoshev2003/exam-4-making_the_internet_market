@@ -7,7 +7,7 @@ const AuthCheck = (props: any) => {
 
   useEffect(() => {
     if (token) {
-      return navigate("/products");
+      return navigate("/home");
     }
   }, [navigate, token]);
 
