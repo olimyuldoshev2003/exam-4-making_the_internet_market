@@ -2,7 +2,7 @@ import { fetchBaseQuery } from "@reduxjs/toolkit/query";
 import { destroyToken } from "../utils/token";
 
 const BaseQuery = fetchBaseQuery({
-  baseUrl: "http://localhost:3000/api/",
+  baseUrl: import.meta.env.VITE_APP_API_URL,
   prepareHeaders: (headers) => {
     const token = localStorage.getItem("access_token");
 
