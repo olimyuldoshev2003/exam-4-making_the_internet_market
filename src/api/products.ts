@@ -5,7 +5,6 @@ export const shopAPI = createApi({
   tagTypes: ["data"],
   reducerPath: "shopApi",
   baseQuery: GlobalBaseQuery,
-  // fetchBaseQuery({ baseUrl: "http://localhost:3000/api/" }),
   endpoints: (builder) => ({
     getData: builder.query({
       query: () => `products`,

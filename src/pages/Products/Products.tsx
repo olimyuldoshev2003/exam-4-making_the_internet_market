@@ -2,8 +2,12 @@ import React from "react";
 import { useDeleteProductMutation, useGetDataQuery } from "../../api/products";
 import { useFormik } from "formik";
 import * as yup from "yup";
+
 const Products = () => {
   const { data = [] } = useGetDataQuery("");
+console.log(data);
+
+
   // // const [deleteUser] = useDeleteProductMutation()
   // console.log(data);
 
@@ -62,13 +66,14 @@ const Products = () => {
             return (
               <div key={item.id}>
                 <div className="w-[240px] h-[280px] shadow-2xl">
-                  {item.media.map((item2: any) => {
-                    return (
-                      <div>
-                        <img src={item2.src} alt="" />
-                      </div>
-                    );
-                  })}
+                  <img
+                    src={import.meta.env.VITE_APP_FILES_URL + item.media.map((item: { src: any; }) => {
+                      return item.src
+                    })}
+                    alt=""
+                    className="h-[160px]"
+
+                  />
                   <h1 className="p-[20px] text-[#936a6a]  text-[21px]">
                     {item.name}
                   </h1>
@@ -77,10 +82,6 @@ const Products = () => {
               </div>
             );
           })}
-
-          
-
-          
         </div>
       </section>
       <section className="section_3"></section>

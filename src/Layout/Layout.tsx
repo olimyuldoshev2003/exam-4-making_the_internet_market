@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useState } from "react";
 import { Link, Outlet, useNavigate } from "react-router-dom";
 
 //For Mini Drawer for pages
@@ -21,34 +21,38 @@ import ListItemIcon from "@mui/material/ListItemIcon";
 import ListItemText from "@mui/material/ListItemText";
 import InboxIcon from "@mui/icons-material/MoveToInbox";
 import MailIcon from "@mui/icons-material/Mail";
+import LogoutIcon from "@mui/icons-material/Logout";
+import axios from "axios";
+import { saveToken } from "../utils/token";
+import { Modal } from "@mui/base";
 
 const drawerWidth = 240;
 
 const openedMixin = (theme: Theme): CSSObject => ({
   width: drawerWidth,
-  transition: theme.transitions.create('width', {
+  transition: theme.transitions.create("width", {
     easing: theme.transitions.easing.sharp,
     duration: theme.transitions.duration.enteringScreen,
   }),
-  overflowX: 'hidden',
+  overflowX: "hidden",
 });
 
 const closedMixin = (theme: Theme): CSSObject => ({
-  transition: theme.transitions.create('width', {
+  transition: theme.transitions.create("width", {
     easing: theme.transitions.easing.sharp,
     duration: theme.transitions.duration.leavingScreen,
   }),
-  overflowX: 'hidden',
+  overflowX: "hidden",
   width: `calc(${theme.spacing(7)} + 1px)`,
-  [theme.breakpoints.up('sm')]: {
+  [theme.breakpoints.up("sm")]: {
     width: `calc(${theme.spacing(8)} + 1px)`,
   },
 });
 
-const DrawerHeader = styled('div')(({ theme }) => ({
-  display: 'flex',
-  alignItems: 'center',
-  justifyContent: 'flex-end',
+const DrawerHeader = styled("div")(({ theme }) => ({
+  display: "flex",
+  alignItems: "center",
+  justifyContent: "flex-end",
   padding: theme.spacing(0, 1),
   // necessary for content to be below app bar
   ...theme.mixins.toolbar,
@@ -93,44 +97,34 @@ const Drawer = styled(MuiDrawer, {
   }),
 }));
 
-
-
 const Layout = () => {
+  const navigate = useNavigate();
 
-  const navigate = useNavigate()
+  const theme = useTheme();
+  const [open, setOpen] = React.useState<boolean>(false);
+  const [logoutModal, setLogoutModal] = useState<boolean>(false);
 
-const theme = useTheme();
-const [open, setOpen] = React.useState(false);
+  const handleDrawerOpen = () => {
+    setOpen(true);
+  };
 
-const handleDrawerOpen = () => {
-  setOpen(true);
-};
+  const handleDrawerClose = () => {
+    setOpen(false);
+  };
 
-const handleDrawerClose = () => {
-  setOpen(false);
-};
+  function openLogoutModal() {
+    setLogoutModal(true);
+  }
 
+  function closeLogoutModal() {
+    setLogoutModal(false);
+  }
 
+  function handleCloseLogoutModal() {
+    setLogoutModal(false);
+  }
 
   return (
-    // <div>
-    //   <div className="main flex">
-    //     <header className="header flex-col">
-    //       <nav className="flex flex-col p-[10px] w-[300px] bg-[#1014ff] text-[#fff] text-center text-[26px]">
-            // <Link to={`/home`}>Home</Link>
-            // <Link to={`/home/products`}>Products</Link>
-
-    //         {/* <Link></Link>
-    //       <Link></Link>
-    //       <Link></Link>
-    //       <Link></Link> */}
-    //       </nav>
-    //     </header>
-    //     <Outlet />
-    //     <section className="section"></section>
-    //   </div>
-    // </div>
-
     <Box sx={{ display: "flex" }}>
       <CssBaseline />
       <AppBar position="fixed" open={open}>
@@ -164,77 +158,297 @@ const handleDrawerClose = () => {
         </DrawerHeader>
         <Divider />
         <List>
-            <ListItem onClick={()=>navigate("/home")} disablePadding sx={{ display: "block" }}>
-              <ListItemButton
+          <ListItem
+            onClick={() => navigate("/home")}
+            disablePadding
+            sx={{ display: "block" }}
+          >
+            <ListItemButton
+              sx={{
+                minHeight: 48,
+                justifyContent: open ? "initial" : "center",
+                px: 2.5,
+              }}
+            >
+              <ListItemIcon
                 sx={{
-                  minHeight: 48,
-                  justifyContent: open ? "initial" : "center",
-                  px: 2.5,
-                }} 
-              >
-                <ListItemIcon
-                  sx={{
-                    minWidth: 0,
-                    mr: open ? 3 : "auto",
-                    justifyContent: "center",
-                  }}
-                >
-                   <InboxIcon /> 
-                </ListItemIcon>
-                <ListItemText primary={<Link to={`/home`}>Home</Link>} sx={{ opacity: open ? 1 : 0 }} />
-              </ListItemButton>
-            </ListItem>
-            <ListItem onClick={()=>navigate("/home/products")} disablePadding sx={{ display: "block" }}>
-              <ListItemButton
-                sx={{
-                  minHeight: 48,
-                  justifyContent: open ? "initial" : "center",
-                  px: 2.5,
-                }} 
-              >
-                <ListItemIcon
-                  sx={{
-                    minWidth: 0,
-                    mr: open ? 3 : "auto",
-                    justifyContent: "center",
-                  }}
-                >
-                  <MailIcon />
-                </ListItemIcon>
-                <ListItemText primary={<Link to={`/home/products`}>Products</Link>} sx={{ opacity: open ? 1 : 0 }} />
-              </ListItemButton>
-            </ListItem>
-        </List>
-        <Divider />
-        {/* <List>
-          {["All mail", "Trash", "Spam"].map((text, index) => (
-            <ListItem key={text} disablePadding sx={{ display: "block" }}>
-              <ListItemButton
-                sx={{
-                  minHeight: 48,
-                  justifyContent: open ? "initial" : "center",
-                  px: 2.5,
+                  minWidth: 0,
+                  mr: open ? 3 : "auto",
+                  justifyContent: "center",
                 }}
               >
-                <ListItemIcon
-                  sx={{
-                    minWidth: 0,
-                    mr: open ? 3 : "auto",
-                    justifyContent: "center",
-                  }}
-                >
-                  {index % 2 === 0 ? <InboxIcon /> : <MailIcon />}
-                </ListItemIcon>
-                <ListItemText primary={text} sx={{ opacity: open ? 1 : 0 }} />
-              </ListItemButton>
-            </ListItem>
-          ))}
-        </List> */}
+                <InboxIcon />
+              </ListItemIcon>
+              <ListItemText
+                primary={<Link to={`/home`}>Home</Link>}
+                sx={{ opacity: open ? 1 : 0 }}
+              />
+            </ListItemButton>
+          </ListItem>
+          <ListItem
+            onClick={() => navigate("/home/products")}
+            disablePadding
+            sx={{ display: "block" }}
+          >
+            <ListItemButton
+              sx={{
+                minHeight: 48,
+                justifyContent: open ? "initial" : "center",
+                px: 2.5,
+              }}
+            >
+              <ListItemIcon
+                sx={{
+                  minWidth: 0,
+                  mr: open ? 3 : "auto",
+                  justifyContent: "center",
+                }}
+              >
+                <MailIcon />
+              </ListItemIcon>
+              <ListItemText
+                primary={<Link to={`/home/products`}>Products</Link>}
+                sx={{ opacity: open ? 1 : 0 }}
+              />
+            </ListItemButton>
+          </ListItem>
+          {/* <ListItem
+            onClick={() => navigate("/home/products")}
+            disablePadding
+            sx={{ display: "block" }}
+          >
+            <ListItemButton
+              sx={{
+                minHeight: 48,
+                justifyContent: open ? "initial" : "center",
+                px: 2.5,
+              }}
+            >
+              <ListItemIcon
+                sx={{
+                  minWidth: 0,
+                  mr: open ? 3 : "auto",
+                  justifyContent: "center",
+                }}
+              >
+                <MailIcon />
+              </ListItemIcon>
+              <ListItemText
+                primary={<Link to={`/home/products`}>Products</Link>}
+                sx={{ opacity: open ? 1 : 0 }}
+              />
+            </ListItemButton>
+          </ListItem> */}
+          {/* <ListItem
+            onClick={() => navigate("/home/products")}
+            disablePadding
+            sx={{ display: "block" }}
+          >
+            <ListItemButton
+              sx={{
+                minHeight: 48,
+                justifyContent: open ? "initial" : "center",
+                px: 2.5,
+              }}
+            >
+              <ListItemIcon
+                sx={{
+                  minWidth: 0,
+                  mr: open ? 3 : "auto",
+                  justifyContent: "center",
+                }}
+              >
+                <MailIcon />
+              </ListItemIcon>
+              <ListItemText
+                primary={<Link to={`/home/products`}>Products</Link>}
+                sx={{ opacity: open ? 1 : 0 }}
+              />
+            </ListItemButton>
+          </ListItem>
+          <ListItem
+            onClick={() => navigate("/home/products")}
+            disablePadding
+            sx={{ display: "block" }}
+          >
+            <ListItemButton
+              sx={{
+                minHeight: 48,
+                justifyContent: open ? "initial" : "center",
+                px: 2.5,
+              }}
+            >
+              <ListItemIcon
+                sx={{
+                  minWidth: 0,
+                  mr: open ? 3 : "auto",
+                  justifyContent: "center",
+                }}
+              >
+                <MailIcon />
+              </ListItemIcon>
+              <ListItemText
+                primary={<Link to={`/home/products`}>Products</Link>}
+                sx={{ opacity: open ? 1 : 0 }}
+              />
+            </ListItemButton>
+          </ListItem>
+          <ListItem
+            onClick={() => navigate("/home/products")}
+            disablePadding
+            sx={{ display: "block" }}
+          >
+            <ListItemButton
+              sx={{
+                minHeight: 48,
+                justifyContent: open ? "initial" : "center",
+                px: 2.5,
+              }}
+            >
+              <ListItemIcon
+                sx={{
+                  minWidth: 0,
+                  mr: open ? 3 : "auto",
+                  justifyContent: "center",
+                }}
+              >
+                <MailIcon />
+              </ListItemIcon>
+              <ListItemText
+                primary={<Link to={`/home/products`}>Products</Link>}
+                sx={{ opacity: open ? 1 : 0 }}
+              />
+            </ListItemButton>
+          </ListItem>
+          <ListItem
+            onClick={() => navigate("/home/products")}
+            disablePadding
+            sx={{ display: "block" }}
+          >
+            <ListItemButton
+              sx={{
+                minHeight: 48,
+                justifyContent: open ? "initial" : "center",
+                px: 2.5,
+              }}
+            >
+              <ListItemIcon
+                sx={{
+                  minWidth: 0,
+                  mr: open ? 3 : "auto",
+                  justifyContent: "center",
+                }}
+              >
+                <MailIcon />
+              </ListItemIcon>
+              <ListItemText
+                primary={<Link to={`/home/products`}>Products</Link>}
+                sx={{ opacity: open ? 1 : 0 }}
+              />
+            </ListItemButton>
+          </ListItem>
+          <ListItem
+            onClick={() => navigate("/home/products")}
+            disablePadding
+            sx={{ display: "block" }}
+          >
+            <ListItemButton
+              sx={{
+                minHeight: 48,
+                justifyContent: open ? "initial" : "center",
+                px: 2.5,
+              }}
+            >
+              <ListItemIcon
+                sx={{
+                  minWidth: 0,
+                  mr: open ? 3 : "auto",
+                  justifyContent: "center",
+                }}
+              >
+                <MailIcon />
+              </ListItemIcon>
+              <ListItemText
+                primary={<Link to={`/home/products`}>Products</Link>}
+                sx={{ opacity: open ? 1 : 0 }}
+              />
+            </ListItemButton>
+          </ListItem> */}
+        </List>
+        <Divider />
+        <List>
+          <ListItem
+            onClick={() => {
+              // saveToken("")
+              // navigate("/")
+              openLogoutModal();
+            }}
+            disablePadding
+            sx={{ display: "block" }}
+          >
+            <ListItemButton
+              sx={{
+                minHeight: 48,
+                justifyContent: open ? "initial" : "center",
+                px: 2.5,
+              }}
+            >
+              <ListItemIcon
+                sx={{
+                  minWidth: 0,
+                  mr: open ? 3 : "auto",
+                  justifyContent: "center",
+                }}
+              >
+                <LogoutIcon />
+              </ListItemIcon>
+              <ListItemText primary={"LOGOUT"} sx={{ opacity: open ? 1 : 0 }} />
+            </ListItemButton>
+          </ListItem>
+        </List>
       </Drawer>
       <Box component="main" sx={{ flexGrow: 1, p: 3 }}>
         <DrawerHeader />
-        <Outlet/>
+        <Outlet />
       </Box>
+      <Modal
+        open={logoutModal}
+        onClose={() => handleCloseLogoutModal()}
+        aria-labelledby="modal-modal-title"
+        aria-describedby="modal-modal-description"
+        className="flex justify-center items-center absolute left-[40%] top-[40%]"
+      >
+        <Box className="w-[300px] py-[30px] bg-[#000]  text-[#fff] border-none outline-none rounded-[10px] ">
+          <div className="flex justify-end pr-[20px]">
+            <button className="text-[#fff] text-[27px]" onClick={()=>closeLogoutModal()}>&times;</button>
+          </div>
+          <div className="flex items-center justify-center flex-col ">
+            <h1 className="mb-[30px] text-center text-[23px] font-[800] ">
+              Are you sure to Logout?
+            </h1>
+            <div className="flex items-center gap-[20px]">
+              <button
+                className="p-[8px_40px] bg-[green] text-[#fff] outline-none rounded-[30px]"
+                onClick={() => {
+                  saveToken("");
+                  navigate("/");
+                  closeLogoutModal();
+                }}
+              >
+                Yes
+              </button>
+              <button
+                className="p-[8px_40px] bg-[red] text-[#fff] outline-none rounded-[30px]"
+                onClick={() => {
+                  closeLogoutModal();
+                }}
+              >
+                No
+              </button>
+            </div>
+          </div>
+        </Box>
+      </Modal>
     </Box>
   );
 };

@@ -23,15 +23,15 @@ const App = () => {
     },
     {
       path: "home",
-      element: <Layout />,
+      element: (
+        <ProtectedRoute>
+          <Layout />
+        </ProtectedRoute>
+      ),
       children: [
         {
           index: true,
-          element: (
-            <ProtectedRoute>
-              <Home />
-            </ProtectedRoute> 
-          ),
+          element: <Home />,
         },
         {
           path: "/home/products",
