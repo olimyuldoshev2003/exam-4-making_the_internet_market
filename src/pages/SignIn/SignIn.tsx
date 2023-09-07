@@ -33,6 +33,8 @@ const SignIn = () => {
       password:password
     }
 
+
+
     try {
       const { data } = await axios.post("http://localhost:3000/api/login", existedUser);
       console.log(data);
@@ -47,6 +49,7 @@ const SignIn = () => {
     } catch (error) {}
   }
 
+  console.log("fK")
   return (
     <div>
       <section className="section flex justify-center items-center h-[100vh]">
